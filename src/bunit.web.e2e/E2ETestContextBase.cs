@@ -23,7 +23,9 @@ namespace bunit.web.e2e
 
 		public T PageComponent<T>() where T : PageComponent
 		{
-			return Activator.CreateInstance<T>();
+			T component = Activator.CreateInstance<T>();
+			_DriverHandler.NavigateTo(component.PageUri);
+			return component;
 		}
 
 		public void Dispose()
