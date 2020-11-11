@@ -1,16 +1,23 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 
 namespace bunit.web.e2e
 {
-	public abstract class PageComponent
+	public abstract class RenderComponent
 	{
-		public abstract Uri PageUri { get; set; }
-
-		public ElementHandler Find(string cssSelector)
+		public RenderComponent(IWebDriver driver)
 		{
-			return new ElementHandler(cssSelector);
+			_Driver = driver;
+		}
+
+		public abstract Uri PageUri { get; set; }
+		private IWebDriver _Driver;
+
+		// Eventually convert to Interface
+		public Element Find(string cssSelector)
+		{
+			return new Element(_Driver, cssSelector);
 		}
 	}
 }

@@ -1,36 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using IntelliTect.TestTools.Selenate;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 
 namespace bunit.web.e2e
 {
     public class E2ETestContextBase : IDisposable
     {
-		private DriverHandler _DriverHandler;
+		// Add default services here.
+		// Need one for each driver we want to support.
+		// May need to write utility to automagically fetch the right driver version to avoid having to manage that directly, if that approach isn't too infeasible.
 
-		public DriverHandler Browser
+		private IWebDriver? _Driver;
+
+		public IWebDriver Driver
 		{
 			get
 			{
 				if (_Driver is null)
 				{
-					_DriverHandler = new DriverHandler(new WebDriverFactory(BrowserType.ChomeHeadless));
+					_Driver = new ChromeDriver();
 				}
-				return _DriverHandler;
+				return _Driver;
 			}
 		}
 
-		public T PageComponent<T>() where T : PageComponent
+		public T RenderComponent<T>() where T : RenderComponent
 		{
 			T component = Activator.CreateInstance<T>();
-			_DriverHandler.NavigateTo(component.PageUri);
+			Driver.Navigate().GoToUrl(component.PageUri);
 			return component;
 		}
 
 		public void Dispose()
 		{
-			_DriverHandler.WrappedDriver.Dispose();
+			Driver?.Dispose();
 		}
     }
 }
