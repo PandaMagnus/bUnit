@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
 namespace bunit.web.e2e
 {
-    public class E2ETestContextBase : IDisposable
+	public class E2ETestContextBase : IDisposable
     {
 		// Add default services here.
 		// Need one for each driver we want to support.
@@ -14,7 +12,7 @@ namespace bunit.web.e2e
 
 		private IWebDriver? _Driver;
 
-		public IWebDriver Driver
+		public IWebDriver Renderer
 		{
 			get
 			{
@@ -28,14 +26,15 @@ namespace bunit.web.e2e
 
 		public T RenderComponent<T>() where T : RenderComponent
 		{
-			T component = Activator.CreateInstance<T>();
-			Driver.Navigate().GoToUrl(component.PageUri);
+			T component = Activator.CreateInstance(typeof(T), Renderer) as T ?? throw new ArgumentNullException();
+			Renderer.Navigate().GoToUrl(component.PageUri);
 			return component;
 		}
 
 		public void Dispose()
 		{
-			Driver?.Dispose();
+			Renderer?.Dispose();
+			GC.SuppressFinalize(this);
 		}
     }
 }
